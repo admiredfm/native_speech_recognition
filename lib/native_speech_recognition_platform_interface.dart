@@ -58,7 +58,7 @@ abstract class NativeSpeechRecognitionPlatform extends PlatformInterface {
     throw UnimplementedError('getSupportedLocales() has not been implemented.');
   }
 
-  StreamSubscription<dynamic> onResult(Function(dynamic) callback){
+  StreamSubscription<dynamic> onResult(Function(dynamic) callback, {double threshold = 0.7}){
     throw UnimplementedError('onResult() has not been implemented.');
   }
 

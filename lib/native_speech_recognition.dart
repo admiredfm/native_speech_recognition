@@ -34,8 +34,8 @@ class NativeSpeechRecognition {
     return await _methodChannel.getCurrentLocale();
   }
 
-  StreamSubscription<dynamic> onResult(Function(dynamic) callback) {
-    return _eventChannel.onResult(callback);
+  StreamSubscription<dynamic> onResult(Function(dynamic) callback, {double threshold = 0.7}) {
+    return _eventChannel.onResult(callback, threshold: threshold);
   }
 
   StreamSubscription<dynamic> onAudioData(Function(dynamic) callback) {

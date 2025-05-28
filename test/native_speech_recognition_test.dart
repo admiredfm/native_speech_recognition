@@ -21,12 +21,6 @@ class MockNativeSpeechRecognitionPlatform
   }
 
   @override
-  StreamSubscription onResult(Function(dynamic p1) callback) {
-    // TODO: implement onResult
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> setLocale(String locale) {
     // TODO: implement setLocale
     throw UnimplementedError();
@@ -53,6 +47,12 @@ class MockNativeSpeechRecognitionPlatform
   @override
   Future<Map<String, String>> getCurrentLocale() {
     // TODO: implement getCurrentLocale
+    throw UnimplementedError();
+  }
+
+  @override
+  StreamSubscription onResult(Function(dynamic p1) callback, {double threshold = 0.7}) {
+    // TODO: implement onResult
     throw UnimplementedError();
   }
 }
