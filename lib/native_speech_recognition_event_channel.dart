@@ -32,6 +32,19 @@ class EventChannelNativeSpeechRecognition extends NativeSpeechRecognitionPlatfor
             return;
           }
 
+          if(!SimHash.areFirstThreeCharsEqual(lastText, currentText, 3)){
+            sink.add({
+              "text": lastText,
+              "isFinal": true
+            });
+            sink.add({
+              "text": currentText,
+              "isFinal": false
+            });
+            lastText = "";
+            return;
+          }
+
           final similar = SimHash.isSimilar(lastText, currentText, threshold);
           if(similar){
             sink.add({

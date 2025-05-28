@@ -105,4 +105,11 @@ class SimHash {
     final double sim = SimHash.similarity(hash1, hash2);
     return sim > threshold;
   }
+
+  static bool areFirstThreeCharsEqual(String a, String b, int count) {
+    if (a.length < count || b.length < count) {
+      return false;
+    }
+    return a.substring(0, count) == b.substring(0, count);
+  }
 }
