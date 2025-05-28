@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:native_speech_recognition/simhash.dart';
 
 import 'native_speech_recognition_platform_interface.dart';
 
@@ -12,7 +13,7 @@ class EventChannelNativeSpeechRecognition extends NativeSpeechRecognitionPlatfor
   late final EventChannel audioDataEvent = EventChannel(NativeSpeechRecognitionPlatform.audioDataEventChannelName);
 
   @override
-  StreamSubscription<dynamic> onResult(Function(dynamic p1) callback) {
+  StreamSubscription<dynamic> onResult(Function(dynamic p1) callback, {double threshold = 0.7}) {
     String lastText = "";
     return resultEvent
         .receiveBroadcastStream()
@@ -28,20 +29,30 @@ class EventChannelNativeSpeechRecognition extends NativeSpeechRecognitionPlatfor
               "isFinal": false
             });
             lastText = currentText;
-          }else{
-            sink.add({
-              "text": lastText,
-              "isFinal": true
-            });
+            return;
+          }
+
+          final similar = SimHash.isSimilar(lastText, currentText, threshold);
+          if(similar){
             sink.add({
               "text": currentText,
               "isFinal": false
             });
-            lastText = "";
+            lastText = currentText;
+            return;
           }
+          sink.add({
+            "text": lastText,
+            "isFinal": true
+          });
+          sink.add({
+            "text": currentText,
+            "isFinal": false
+          });
+          lastText = "";
         }
-    ))
-        .listen((event) => callback(event));
+
+    )).listen((event) => callback(event));
   }
 
   @override

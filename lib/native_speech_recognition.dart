@@ -1,6 +1,8 @@
 
 import 'dart:async';
 
+import 'package:native_speech_recognition/simhash.dart';
+
 import 'native_speech_recognition_platform_interface.dart';
 
 class NativeSpeechRecognition {
@@ -40,9 +42,11 @@ class NativeSpeechRecognition {
     return _eventChannel.onAudioData(callback);
   }
 
+  double testTextSimilarity(String t1, String t2){
+    final int hash1 = SimHash.getSimHash(t1);
+    final int hash2 = SimHash.getSimHash(t2);
 
-
-
-
+    return SimHash.similarity(hash1, hash2);
+  }
 
 }

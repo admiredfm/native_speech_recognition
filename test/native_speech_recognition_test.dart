@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:native_speech_recognition/native_speech_recognition.dart';
 import 'package:native_speech_recognition/native_speech_recognition_platform_interface.dart';
 import 'package:native_speech_recognition/native_speech_recognition_method_channel.dart';
+import 'package:native_speech_recognition/simhash.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockNativeSpeechRecognitionPlatform
@@ -57,6 +58,7 @@ class MockNativeSpeechRecognitionPlatform
 }
 
 void main() {
+
   final NativeSpeechRecognitionPlatform initialPlatform = NativeSpeechRecognitionPlatform.methodChannel;
 
   test('$MethodChannelNativeSpeechRecognition is the default instance', () {
