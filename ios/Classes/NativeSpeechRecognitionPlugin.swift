@@ -62,6 +62,8 @@ public class NativeSpeechRecognitionPlugin: NSObject, FlutterPlugin {
         break
     case "getSupportedLocales":
         result(getSupportedLocales());
+    case "getCurrentLocale":
+        result(getCurrentLocale());
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -190,6 +192,14 @@ public class NativeSpeechRecognitionPlugin: NSObject, FlutterPlugin {
     public func setLocale(localIdentifier: String) -> Void {
         stop()
         currentLocale = Locale(identifier: localIdentifier)
+    }
+
+    public func getCurrentLocale() -> [String: String] {
+        var locales = [String: String]()
+        locales["languageCode"] = currentLocale.languageCode
+        locales["identifier"] = currentLocale.identifier
+        locales["localizedName"] = currentLocale.localizedString(forLanguageCode: currentLocale.languageCode!)
+        return locales
     }
 
 

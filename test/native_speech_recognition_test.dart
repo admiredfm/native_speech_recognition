@@ -48,6 +48,12 @@ class MockNativeSpeechRecognitionPlatform
     // TODO: implement getSupportedLocales
     throw UnimplementedError();
   }
+
+  @override
+  Future<Map<String, String>> getCurrentLocale() {
+    // TODO: implement getCurrentLocale
+    throw UnimplementedError();
+  }
 }
 
 void main() {

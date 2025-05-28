@@ -46,7 +46,6 @@ class EventChannelNativeSpeechRecognition extends NativeSpeechRecognitionPlatfor
 
   @override
   StreamSubscription<dynamic> onAudioData(Function(dynamic p1) callback) {
-    String recognizedText = "";
     return audioDataEvent.receiveBroadcastStream().listen((event) => callback(event));
   }
 

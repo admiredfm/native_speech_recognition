@@ -50,8 +50,12 @@ abstract class NativeSpeechRecognitionPlatform extends PlatformInterface {
     throw UnimplementedError('setLocale() has not been implemented.');
   }
 
+  Future<Map<String, String>> getCurrentLocale() async {
+    throw UnimplementedError('getCurrentLocale() has not been implemented.');
+  }
+
   Future<Map<String, String>> getSupportedLocales() async {
-    throw UnimplementedError('setLocale() has not been implemented.');
+    throw UnimplementedError('getSupportedLocales() has not been implemented.');
   }
 
   StreamSubscription<dynamic> onResult(Function(dynamic) callback){
@@ -59,7 +63,7 @@ abstract class NativeSpeechRecognitionPlatform extends PlatformInterface {
   }
 
   StreamSubscription<dynamic> onAudioData(Function(dynamic) callback){
-    throw UnimplementedError('onResult() has not been implemented.');
+    throw UnimplementedError('onAudioData() has not been implemented.');
   }
 
 }

@@ -36,6 +36,11 @@ class MethodChannelNativeSpeechRecognition extends NativeSpeechRecognitionPlatfo
     return Map<String, String>.from(locales);
   }
 
+  @override
+  Future<Map<String, String>> getCurrentLocale() async {
+    return await methodChannel.invokeMethod("getCurrentLocale");
+  }
+
 
 
 }
