@@ -190,7 +190,6 @@ public class NativeSpeechRecognitionPlugin: NSObject, FlutterPlugin {
     }
 
     public func setLocale(localIdentifier: String) -> Void {
-        stop()
         currentLocale = Locale(identifier: localIdentifier)
     }
 
