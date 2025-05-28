@@ -28,6 +28,10 @@ class NativeSpeechRecognition {
     return await _methodChannel.getSupportedLocales();
   }
 
+  Future<Map<String, String>> getCurrentLocale() async {
+    return await _methodChannel.getCurrentLocale();
+  }
+
   StreamSubscription<dynamic> onResult(Function(dynamic) callback) {
     return _eventChannel.onResult(callback);
   }
