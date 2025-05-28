@@ -1,6 +1,6 @@
 name: native_speech_recognition
 description: "A voice-to-text plugin"
-version: 0.0.2
+version: 0.0.3
 
 environment:
   sdk: ^3.7.0
