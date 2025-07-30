@@ -92,13 +92,19 @@ public class NativeSpeechRecognitionPlugin: NSObject, FlutterPlugin {
         }
 
         let audioSession = AVAudioSession.sharedInstance()
+
+        try audioSession.setCategory(
+                .playAndRecord,
+                mode: .spokenAudio,
+                options: [.allowBluetooth, .duckOthers]
+        )
+
         try audioSession.setPreferredSampleRate(16000)
         try audioSession.setPreferredIOBufferDuration(0.016)
-        try audioSession.setCategory(.playAndRecord, options: .duckOthers)
-        try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         if audioSession.isInputGainSettable {
             try audioSession.setInputGain(1.0)
         }
+        try audioSession.setActive(true)
 
         let inputNode = audioEngine.inputNode
 
