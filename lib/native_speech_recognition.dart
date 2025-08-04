@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:native_speech_recognition/simhash.dart';
 
@@ -15,11 +16,15 @@ class NativeSpeechRecognition {
   }
 
   Future<void> start() async {
-    _methodChannel.start();
+    await _methodChannel.start();
   }
 
   Future<void> stop() async{
     _methodChannel.stop();
+  }
+
+  Future<void> sendAudioData(Uint8List data) async{
+    await _methodChannel.sendAudioData(data);
   }
 
   Future<void> setLocale(String locale) async{

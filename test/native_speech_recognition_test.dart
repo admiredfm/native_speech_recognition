@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:native_speech_recognition/native_speech_recognition.dart';
@@ -53,6 +54,12 @@ class MockNativeSpeechRecognitionPlatform
   @override
   StreamSubscription onResult(Function(dynamic p1) callback, {double threshold = 0.7}) {
     // TODO: implement onResult
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> sendAudioData(Uint8List data) {
+    // TODO: implement sendAudioData
     throw UnimplementedError();
   }
 }

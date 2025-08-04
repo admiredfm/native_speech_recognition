@@ -6,7 +6,7 @@ public class NativeSpeechRecognitionPlugin: NSObject, FlutterPlugin {
   private var resultHandler: ResultStreamHandler!
   private var audioDataHandler: ResultStreamHandler!
 
-  private let audioEngine = AVAudioEngine()
+//  private let audioEngine = AVAudioEngine()
   private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
   private var speechRecognizer = SFSpeechRecognizer(locale: Locale.current)
   private var recognitionTask: SFSpeechRecognitionTask?
@@ -52,6 +52,15 @@ public class NativeSpeechRecognitionPlugin: NSObject, FlutterPlugin {
             }
         }
         break
+    case "sendAudioData":
+      if let args = call.arguments as? [String: Any],
+         let data = args["data"] as? FlutterStandardTypedData,
+         let sampleRate = args["sampleRate"] as? Double {
+        self.sendAudioData(data: data.data, sampleRate: sampleRate)
+        result(nil)
+      } else {
+        result(FlutterError(code: "INVALID_ARGS", message: "Missing data or sampleRate", details: nil))
+      }
     case "stop":
         self.stop()
         break
@@ -91,49 +100,49 @@ public class NativeSpeechRecognitionPlugin: NSObject, FlutterPlugin {
             speechRecognizer = SFSpeechRecognizer(locale: currentLocale)
         }
 
-        let audioSession = AVAudioSession.sharedInstance()
+//        let audioSession = AVAudioSession.sharedInstance()
+//
+//        try audioSession.setCategory(
+//                .playAndRecord,
+//                mode: .spokenAudio,
+//                options: [.allowBluetooth, .duckOthers]
+//        )
+//
+//        try audioSession.setPreferredSampleRate(16000)
+//        try audioSession.setPreferredIOBufferDuration(0.016)
+//        if audioSession.isInputGainSettable {
+//            try audioSession.setInputGain(1.0)
+//        }
+//        try audioSession.setActive(true)
 
-        try audioSession.setCategory(
-                .playAndRecord,
-                mode: .spokenAudio,
-                options: [.allowBluetooth, .duckOthers]
-        )
+//        let inputNode = audioEngine.inputNode
+//
+//        var setting = audioEngine.inputNode.inputFormat(forBus: 0).settings
+//        setting[AVLinearPCMBitDepthKey] = 16
+//        setting[AVSampleRateKey] = 16000
+//        setting[AVLinearPCMIsFloatKey] = 0
+//
+//        inputNode.removeTap(onBus: 0)
+//
+//        let recordingFormat = AVAudioFormat.init(settings: setting)
 
-        try audioSession.setPreferredSampleRate(16000)
-        try audioSession.setPreferredIOBufferDuration(0.016)
-        if audioSession.isInputGainSettable {
-            try audioSession.setInputGain(1.0)
-        }
-        try audioSession.setActive(true)
-
-        let inputNode = audioEngine.inputNode
-
-        var setting = audioEngine.inputNode.inputFormat(forBus: 0).settings
-        setting[AVLinearPCMBitDepthKey] = 16
-        setting[AVSampleRateKey] = 16000
-        setting[AVLinearPCMIsFloatKey] = 0
-
-        inputNode.removeTap(onBus: 0)
-
-        let recordingFormat = AVAudioFormat.init(settings: setting)
-
-        inputNode.installTap(onBus: 0, bufferSize: 1600, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
-            self.recognitionRequest?.append(buffer)
-
-            let format = buffer.format
-            let pcmData = self.extractData(from: buffer)
-
-            let resultDict: [String: Any] = [
-                "sampleRate": format.sampleRate,
-                "channelCount": format.channelCount,
-                "data": pcmData
-            ]
-
-            self.audioDataHandler.sendResult(resultDict)
-        }
-
-        audioEngine.prepare()
-        try audioEngine.start()
+//        inputNode.installTap(onBus: 0, bufferSize: 1600, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
+//            self.recognitionRequest?.append(buffer)
+//
+//            let format = buffer.format
+//            let pcmData = self.extractData(from: buffer)
+//
+//            let resultDict: [String: Any] = [
+//                "sampleRate": format.sampleRate,
+//                "channelCount": format.channelCount,
+//                "data": pcmData
+//            ]
+//
+//            self.audioDataHandler.sendResult(resultDict)
+//        }
+//
+//        audioEngine.prepare()
+//        try audioEngine.start()
 
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         guard let recognitionRequest = recognitionRequest else {
@@ -163,11 +172,57 @@ public class NativeSpeechRecognitionPlugin: NSObject, FlutterPlugin {
                 print(error)
             }
         }
+        flutterResult(nil)
+    }
+
+    func sendAudioData(data: Data, sampleRate: Double) {
+        guard let recognitionRequest = recognitionRequest, !data.isEmpty else { return }
+
+        // 确保数据长度是 Int16 的整数倍
+        guard data.count % MemoryLayout<Int16>.size == 0 else {
+            print("Invalid data length: not aligned to 16-bit samples")
+            return
+        }
+
+        let int16Count = data.count / MemoryLayout<Int16>.size
+
+        // 设置音频格式：单声道，16kHz，16位 PCM
+        let format = AVAudioFormat(
+            commonFormat: .pcmFormatInt16,
+            sampleRate: sampleRate,
+            channels: 1,
+            interleaved: false
+        )!
+
+        // 创建 PCM Buffer
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: UInt32(int16Count)) else {
+            print("Failed to create AVAudioPCMBuffer")
+            return
+        }
+        buffer.frameLength = UInt32(int16Count)
+
+        // 获取 buffer 的声道数据指针 (UnsafeMutablePointer<Int16>)
+        let channelData = buffer.int16ChannelData![0]
+
+        // ✅ 关键修复：使用 withUnsafeBytes 获取 UnsafeRawBufferPointer
+        // 然后用 `baseAddress.assumingMemoryBound(to:)` 转为 UnsafePointer<Int16>
+        data.withUnsafeBytes { rawBuffer in
+            // rawBuffer 是 UnsafeRawBufferPointer
+            // 获取起始地址并强转为 UnsafePointer<Int16>
+            guard let baseAddress = rawBuffer.baseAddress else { return }
+            let int16Src = baseAddress.assumingMemoryBound(to: Int16.self)
+
+            // ✅ 现在类型正确：UnsafePointer<Int16> → 可用于 initialize
+            channelData.initialize(from: int16Src, count: int16Count)
+        }
+
+        // 推入识别引擎
+        recognitionRequest.append(buffer)
     }
 
     public func stop() {
-        self.audioEngine.stop()
-        self.audioEngine.inputNode.removeTap(onBus: 0)
+//        self.audioEngine.stop()
+//        self.audioEngine.inputNode.removeTap(onBus: 0)
         self.recognitionRequest = nil
         self.recognitionTask?.cancel()
         self.recognitionTask = nil

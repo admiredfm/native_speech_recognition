@@ -17,17 +17,25 @@ class MethodChannelNativeSpeechRecognition extends NativeSpeechRecognitionPlatfo
 
   @override
   Future<void> start() async {
-    methodChannel.invokeMethod("start");
+    await methodChannel.invokeMethod("start");
+  }
+
+  @override
+  Future<void> sendAudioData(Uint8List data) async {
+    await methodChannel.invokeMethod("sendAudioData",{
+      'data': data,
+      'sampleRate': 16000.0
+    });
   }
 
   @override
   Future<void> stop() async {
-    methodChannel.invokeMethod("stop");
+    await methodChannel.invokeMethod("stop");
   }
 
   @override
   Future<void> setLocale(String locale) async {
-    methodChannel.invokeMethod("setLocale", locale);
+    await methodChannel.invokeMethod("setLocale", locale);
   }
 
   @override

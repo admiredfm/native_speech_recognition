@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:native_speech_recognition/native_speech_recognition_event_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -40,6 +41,10 @@ abstract class NativeSpeechRecognitionPlatform extends PlatformInterface {
 
   Future<void> start() async {
     throw UnimplementedError('start() has not been implemented.');
+  }
+
+  Future<void> sendAudioData(Uint8List data) async {
+    throw UnimplementedError('sendAudioData() has not been implemented.');
   }
 
   Future<void> stop() async{
